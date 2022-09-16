@@ -39,6 +39,8 @@ CREATE TABLE orders (
     comments TEXT,
     FOREIGN KEY (fk_customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
 );
+
+
 ALTER TABLE customers
 MODIFY COLUMN first_name VARCHAR(50) NOT NULL;
 UPDATE customers
@@ -46,3 +48,5 @@ set first_name = ''
 where first_name IS NULL;
 INSERT INTO orders (fk_customer_id, order_date, order_status)
 VALUES (1, '2022-09-08', 2);
+
+select * from customers;
