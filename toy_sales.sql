@@ -55,22 +55,55 @@ INSERT INTO Sales (toy_id, employee_id, sale_date, quantity) VALUES (2, 3, '2020
 
 
 UPDATE Employees
-
 SET employee_name = concat(employee_name, '@example.com');
 
-DELIMETER $$;
+DROP PROCEDURE IF EXISTS printNumbers;
+
+
+DELIMITER //
 CREATE PROCEDURE printNumbers()
 BEGIN
     DECLARE num INT;
     SET num = 0;
-    label1: LOOP
-        SELECT num;
+    lab: LOOP
         SET num = num + 1;
+        SELECT num;
         IF num > 6 THEN
-            LEAVE label1;
+            LEAVE lab;
         END IF;  
-    END LOOP label1;
-    ITERATE label1;
+    END LOOP lab;
     SELECT num;
-END$$
-DELIMETER;
+END//
+DELIMITER ;
+
+DROP view IF EXISTS vToy_sales;
+CREATE view vToy_sales AS
+SELECT employee_name, toy_name, brand, price, quantity, sale_date
+FROM Toys
+INNER JOIN Sales
+ON Sales.toy_id=Toys.id
+INNER JOIN Employees
+ON Employees.id=Sales.employee_id;
+
+SELECT * FROM vToy_sales;
+
+create view vSalesByBrands as
+select brand,
+    sum(quantity) as total_quantity_sold,
+    round(sum(quantity * price), 2) as total_sales_dollars
+from Toys
+    inner join Sales on Toys.id = Sales.toy_id
+group by brand;
+
+select * from vSalesByBrands;
+
+create view vLastMonthsales as
+select *
+from Sales
+where Month(sale_date) = (
+        select month(max(sale_date))
+        from Sales
+    );
+
+select * from vLastMonthsales;
+
