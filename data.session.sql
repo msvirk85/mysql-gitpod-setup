@@ -1,0 +1,3 @@
+use airline;
+
+SHOW tables;
